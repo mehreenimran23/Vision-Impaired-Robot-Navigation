@@ -1,18 +1,4 @@
-# ================================================================
-#  VISION IMPAIRED ROBOT NAVIGATION — Dataset Generator
-#  Authors : Abeer Azeem (22L-7781) | Mehreen Imran (22L-7668)
-#  Section : BCS-8B
-#
-#  HOW TO RUN IN VS CODE:
-#  1. Open terminal in VS Code  (Ctrl + `)
-#  2. Install missing libraries:
-#       pip install pybullet opencv-python numpy pandas matplotlib
-#  3. Run:
-#       python dataset_generator_vscode.py
-#
-#  OUTPUT: A folder called  robot_dataset/  will be created
-#          in the same directory as this script.
-# ================================================================
+
 
 import sys
 import os
@@ -20,7 +6,6 @@ import random
 import time
 from pathlib import Path
 
-# ── Third-party imports with friendly error messages ────────────
 try:
     import pybullet as p
     import pybullet_data
@@ -51,13 +36,11 @@ except ImportError:
     sys.exit("[ERROR] matplotlib not found. Run:  pip install matplotlib")
 
 
-# ================================================================
-#  CONFIGURATION  —  edit these to change dataset size / quality
-# ================================================================
+
 
 IMG_W, IMG_H   = 224, 224      # final image size for CNN input
-CAM_WIDTH      = 320           # PyBullet render width  (pixels)
-CAM_HEIGHT     = 240           # PyBullet render height (pixels)
+CAM_WIDTH      = 320          
+CAM_HEIGHT     = 240           #
 FOV            = 60            # camera field-of-view   (degrees)
 STEPS_PER_RUN  = 40          # max simulation steps per run
 N_RUNS         = 10            # number of traversal runs
@@ -90,9 +73,7 @@ WAYPOINTS = [
 ]
 
 
-# ================================================================
-#  STEP 1 — Create output folder structure
-# ================================================================
+
 
 def create_folders():
     for noise in NOISE_TYPES:
@@ -100,13 +81,11 @@ def create_folders():
     print("[OK] Output folders created under:", DATASET_DIR)
 
 
-# ================================================================
-#  STEP 2 — PyBullet environment
-# ================================================================
+
 
 def start_pybullet():
     """Connect to PyBullet in headless (DIRECT) mode."""
-    client = p.connect(p.DIRECT)          # no GUI window needed
+    client = p.connect(p.DIRECT)         
     p.setAdditionalSearchPath(pybullet_data.getDataPath())
     p.setGravity(0, 0, -9.8)
     print("[OK] PyBullet started (DIRECT / headless mode)")
@@ -131,8 +110,8 @@ def build_wall(pos, size, color=(0.4, 0.4, 0.4, 1)):
 
 def build_maze():
     """Build the 3-D maze from wall segments."""
-    WALL_H = 1.0    # half-height  → full wall = 2 m tall
-    WALL_T = 0.15   # half-thickness
+    WALL_H = 1.0    # height 
+    WALL_T = 0.15   # thickness
 
     # Outer boundary walls
     boundary = [
@@ -171,12 +150,10 @@ def build_maze():
     print("[OK] Maze built  (4 boundary walls + 13 inner walls)")
 
 
-# ================================================================
-#  STEP 3 — Camera & image processing
-# ================================================================
+
 
 def get_camera_image(cam_pos, yaw_deg):
-    """Render one frame from the virtual camera."""
+    
     yaw_rad = np.deg2rad(yaw_deg)
     target  = [
         cam_pos[0] + np.cos(yaw_rad),
@@ -197,7 +174,7 @@ def get_camera_image(cam_pos, yaw_deg):
 
 
 def preprocess(img):
-    """Resize to CNN input dimensions (keeps uint8 for PNG saving)."""
+   
     return cv2.resize(img, (IMG_W, IMG_H))
 
 
@@ -224,9 +201,7 @@ def apply_degradation(img, noise_type):
         raise ValueError(f"Unknown noise_type: {noise_type}")
 
 
-# ================================================================
-#  STEP 4 — Rule-based pilot (assigns action labels)
-# ================================================================
+
 
 def get_action(cam_pos, cam_yaw, target_wp):
     """
@@ -262,9 +237,7 @@ def get_action(cam_pos, cam_yaw, target_wp):
     return action, new_pos, new_yaw
 
 
-# ================================================================
-#  STEP 5 — Main data collection loop
-# ================================================================
+
 
 def collect_dataset():
     records     = []
@@ -335,9 +308,7 @@ def collect_dataset():
     return records
 
 
-# ================================================================
-#  STEP 6 — Save CSV labels
-# ================================================================
+
 
 def save_labels(records):
     df = pd.DataFrame(records)
@@ -357,9 +328,7 @@ def save_labels(records):
     return df
 
 
-# ================================================================
-#  STEP 7 — Plots  (saved as PNG files, NOT shown in a window)
-# ================================================================
+
 
 def save_stats_plot(df):
     fig, axes = plt.subplots(1, 2, figsize=(13, 4))
@@ -443,9 +412,6 @@ def save_intensity_histograms():
     print(f"  Saved: {out}")
 
 
-# ================================================================
-#  ENTRY POINT
-# ================================================================
 
 def main():
     print("=" * 60)
@@ -456,7 +422,7 @@ def main():
     # 1. Folders
     create_folders()
 
-    # 2. Simulate & collect images
+    # 2. Simulate  collect images
     records = collect_dataset()
 
     # 3. Labels CSV
